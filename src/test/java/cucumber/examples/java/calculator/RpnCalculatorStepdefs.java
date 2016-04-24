@@ -7,6 +7,8 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
@@ -16,6 +18,7 @@ public class RpnCalculatorStepdefs {
 
     @Given("^a calculator I just turned on$")
     public void a_calculator_I_just_turned_on() {
+    	//System.out.println("** classpath: " + System.getProperty("java.class.path"));
         calc = new RpnCalculator();
     }
 
