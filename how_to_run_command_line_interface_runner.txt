@@ -1,0 +1,41 @@
+Notes and steps for getting the cucumber-jvm Command Line Interface (CLI) working.
+
+the general syntax of the cucumber CLI is:
+
+    java -cp <classpath: list of jars and project paths> cucumber.api.cli.Main <cucumber options> <fully qualified path to feature files>
+    
+This note assumes that you have imported your project into Eclipse IDE for Java Developers as a Maven project with the m2e 
+plugin. You can adjust the build path by right-clicking on your project and selecting Build Path > Configure Build Path... 
+Once the build path is configured correctly in Eclipse we need to extract it.
+
+One way to extract the classpath is to insert: 
+
+    System.out.println("** classpath: " + System.getProperty("java.class.path"));
+    
+into one of the step definition Given, When, or Than java blocks then execute that scenario using the JUnit runner. The
+console output (Eclipse) will contain fully qualified paths to the jar dependencies. Copy the printed classpath and paste
+it replacing <classpath: list of jars and project paths>.
+
+Next add source code paths:
+
+     /home/mike/gitprojs/java-calculator-testng/src/main/cucumber/examples/java/calculator/*:/home/mike/gitprojs/java-calculator-testng/src/main/cucumber/examples/java/calculator/*:/home/mike/gitprojs/java-calculator-testng/src/test/resources/cucumber/examples/java/calculator/*:
+
+Note that the added paths end in /* and are separated by the OS specific classpath separator.  This was created on Centos7 so 
+that seperator is a colon.
+
+This concludes the classpath part (Thank goodness!)
+
+Next (after cucumber.api.cli.Main) comes <cucumber options>. Refer to this [usage guide](https://github.com/cucumber/cucumber-jvm/blob/0aecc4d3e4c15fc34b63f848043deba2c230e35f/core/src/main/resources/cucumber/api/cli/USAGE.txt).
+At a minimum at a glue step for your step definition package(s one --glue for each). Note you specify package names, not fully 
+qualified paths. So for this projects the cucumber options are:
+
+    --plugin json:target/cucumber-report.json --glue cucumber/examples/java/calculator
+    
+The last clause is the fully qualified path to the features directory.  Note that it does not end in "/*".
+
+The full statement looks like:
+
+    java -cp /home/mike/gitprojs/java-calculator-testng/target/test-classes:/home/mike/gitprojs/java-calculator-testng/target/classes:/home/mike/.m2/repository/info/cukes/cucumber-jvm-deps/1.0.5/cucumber-jvm-deps-1.0.5.jar:/home/mike/.m2/repository/info/cukes/cucumber-java/1.2.4/cucumber-java-1.2.4.jar:/home/mike/.m2/repository/info/cukes/cucumber-core/1.2.4/cucumber-core-1.2.4.jar:/home/mike/.m2/repository/info/cukes/cucumber-html/0.2.3/cucumber-html-0.2.3.jar:/home/mike/.m2/repository/info/cukes/gherkin/2.12.2/gherkin-2.12.2.jar:/home/mike/.m2/repository/info/cukes/cucumber-testng/1.2.4/cucumber-testng-1.2.4.jar:/home/mike/.m2/repository/org/testng/testng/6.9.4/testng-6.9.4.jar:/home/mike/.m2/repository/org/beanshell/bsh/2.0b4/bsh-2.0b4.jar:/home/mike/.m2/repository/com/beust/jcommander/1.48/jcommander-1.48.jar:/home/mike/.m2/repository/org/apache/maven/surefire/surefire-testng-utils/2.17/surefire-testng-utils-2.17.jar:/home/mike/.m2/repository/org/apache/maven/surefire/surefire-grouper/2.17/surefire-grouper-2.17.jar:/home/mike/gitprojs/java-calculator-testng/src/main/cucumber/examples/java/calculator/*:/home/mike/gitprojs/java-calculator-testng/src/main/cucumber/examples/java/calculator/*:/home/mike/gitprojs/java-calculator-testng/src/test/resources/cucumber/examples/java/calculator/*: cucumber.api.cli.Main --plugin json:target/cucumber-report.json --glue cucumber/examples/java/calculator /home/mike/gitprojs/java-calculator-testng/src/test/resources/cucumber/examples/java/calculator/features
+ 
+To execute the CLI open a bash terminal and cd <project root> then enter the full statement and press enter.
+        
